@@ -29,5 +29,6 @@ styles/
 **/src/data/error
 **/src/data/outbox
 **/activemq-data
-
+.DS_Store
+**/*.DS_Store
 
