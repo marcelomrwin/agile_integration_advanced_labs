@@ -1,9 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:camel="http://camel.apache.org/schema/spring"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-    <!-- Define a traditional camel context here -->
-    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
-        <propertyPlaceholder id="properties" location="route.properties"/>
-    </camelContext>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+	<!-- Define a traditional camel context here -->
+	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+		<propertyPlaceholder id="properties" location="route.properties" />
+
+		<dataFormats>
+			<bindy classType="org.acme.Customer" id="bindyDataformat" type="Csv" />
+		</dataFormats>
+		<onException>
+			<exception>java.lang.IllegalArgumentException</exception>
+			<handled>
+				<constant>true</constant>
+			</handled>
+			<to uri="direct://errorHandler" />
+		</onException>
+
+		<camel:rest path="/service">
+			<camel:post uri="/customers">
+				<camel:to uri="direct:inbox" />
+			</camel:post>
+		</camel:rest>
+
+		<route id="restIn">
+			<from uri="direct:inbox" />
+			<split streaming="true">
+				<tokenize token=";" />
+				<to uri="direct://proccess" />
+			</split>
+			<to uri="direct:response" />
+		</route>
+
+		<route>
+			<from uri="direct://proccess" />
+			<unmarshal ref="bindyDataformat" />
+			<to uri="dozer:transformOrder?mappingFile=transformation.xml&amp;targetModel=org.globex.Account" />
+			<marshal>
+				<json library="Jackson" />
+			</marshal>
+			<camel:inOnly uri="amqp:queue:accountQueue" />			
+		</route>
+
+		<route id="errorHandler">
+			<from uri="direct://errorHandler" />
+			<marshal>
+				<json library="Jackson" />
+			</marshal>
+			<camel:inOnly uri="amqp:queue:errorQueue" />
+		</route>
+
+		<route>
+			<from uri="direct:response" />
+			<camel:transform>
+				<camel:constant>Processed the customer data</camel:constant>
+			</camel:transform>
+		</route>
+
+	</camelContext>
 </beans>

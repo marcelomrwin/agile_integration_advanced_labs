@@ -14,7 +14,6 @@
             </handled>
             <to uri="direct://errorHandler"/>
         </onException>
-        
         <route id="route">
             <from id="_from1" uri="file:src/data/inbox?fileName=customers.csv&amp;noop=true"/>
             <split id="_split1" streaming="true">
@@ -22,7 +21,6 @@
                 <to id="_to1" uri="direct://proccess"/>
             </split>
         </route>
-        
         <route id="_route1">
             <from id="_from2" uri="direct://proccess"/>
             <unmarshal id="_unmarshal1" ref="bindyDataformat"/>
@@ -32,7 +30,6 @@
             </marshal>
             <to id="_to3" uri="file:src/data/outbox?fileName=account-${property.CamelSplitIndex}.json"/>
         </route>
-        
         <route id="errorHandler">
             <from id="_from3" uri="direct://errorHandler"/>
             <marshal id="_marshal2">
