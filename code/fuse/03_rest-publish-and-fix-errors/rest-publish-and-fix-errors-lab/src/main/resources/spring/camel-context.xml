@@ -1,9 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:camel="http://camel.apache.org/schema/spring"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-    <!-- Define a traditional camel context here -->
-    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
-        <propertyPlaceholder id="properties" location="route.properties"/>
-    </camelContext>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<bean id="exceptionProccessor" class="com.redhat.training.gpte.springboot.DefaultExceptionProcessor" />
+
+	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+		<propertyPlaceholder id="properties" location="route.properties" />
+
+		<endpoint id="csv2json"
+			uri="dozer:csv2json2?sourceModel=org.acme.Customer&amp;targetModel=org.globex.Account&amp;marshalId=json&amp;unmarshalId=csv&amp;mappingFile=transformation.xml" />
+		<!-- CSV Input & JSon OutPut DataFormat -->
+		<dataFormats>
+			<bindy classType="org.acme.Customer" id="csv" type="Csv" />
+			<json id="json" library="Jackson" />
+		</dataFormats>
+
+		<restConfiguration bindingMode="off" component="servlet" contextPath="/rest" />
+
+		<rest apiDocs="true" path="/service">
+			<post uri="/customers">
+				<to uri="amqp:queue:inputQueue" />
+			</post>
+			<camel:get uri="/ping">
+				<to uri="direct:ping" />
+			</camel:get>
+		</rest>
+
+		<route streamCache="true">
+
+			<from uri="amqp:queue:inputQueue" />
+
+			<camel:log message="Receive message" loggingLevel="DEBUG" />
+
+			<onException>
+				<exception>java.lang.IllegalArgumentException</exception>
+				<handled>
+					<constant>true</constant>
+				</handled>
+				<setExchangePattern pattern="InOnly" />
+				<to uri="direct:error" />
+			</onException>
+
+			<split>
+				<tokenize token=";" />
+				<to ref="csv2json" />
+				<setExchangePattern pattern="InOnly" />
+				<to uri="amqp:queue:accountQueue" />
+			</split>
+
+			<transform>
+				<constant>Processed the customer data</constant>
+			</transform>
+		</route>
+
+		<route>
+			<camel:from uri="direct:error" />
+			<camel:log message="${body}" loggingLevel="DEBUG" logName="org.fuse.usecase" />
+			<camel:process ref="exceptionProccessor" />
+			<camel:to uri="amqp:topic:errorNotification" />
+		</route>
+
+		<route>
+			<camel:from uri="amqp:topic:errorNotification" />
+			<camel:to
+				uri="sql:insert into USECASE.T_ERROR (ERROR_CODE, ERROR_MESSAGE, MESSAGE, STATUS) values (:#error_code, :#error_message, :#${body},'ERROR');" />
+		</route>
+
+		<route>
+			<camel:from
+				uri="sql:select ID, MESSAGE from USECASE.T_ERROR where STATUS = 'FIXED'?consumer.initialDelay=0&amp;consumer.delay=50&amp;onConsume=update USECASE.T_ERROR set STATUS='CLOSED' where ID = :#ID" />
+			<camel:split>
+				<camel:simple>${body}</camel:simple>
+				<camel:to uri="direct:processData" />
+			</camel:split>
+		</route>
+
+		<route id="reingress">
+			<camel:from uri="direct:processData" />
+			<camel:setBody>
+				<camel:simple>${body[MESSAGE]}</camel:simple>
+			</camel:setBody>
+			<to uri="amqp:queue:inputQueue" />
+		</route>
+
+		<route id="pingRoute">
+			<from uri="direct:ping" />
+			<camel:setBody>
+				<camel:constant>PONG</camel:constant>
+			</camel:setBody>
+		</route>
+
+	</camelContext>
 </beans>

@@ -18,7 +18,7 @@ spec:
           - name: POSTGRESQL_SERVICE_NAME
             value: postgresql
           - name: POSTGRESQL_SERVICE_DATABASE
-            value: sampledb
+            value: usecase
           - name: POSTGRESQL_SERVICE_USERNAME
             value: postgres
           - name: POSTGRESQL_SERVICE_PASSWORD
