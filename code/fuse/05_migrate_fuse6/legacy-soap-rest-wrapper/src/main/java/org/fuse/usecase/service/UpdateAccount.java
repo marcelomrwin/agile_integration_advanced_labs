@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for updateAccount complex type.
+ * <p>Classe Java de updateAccount complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>O seguinte fragmento do esquema especifica o conteúdo esperado contido dentro desta classe.
  * 
  * <pre>
  * &lt;complexType name="updateAccount"&gt;
@@ -34,7 +34,7 @@ public class UpdateAccount {
     protected Account arg0;
 
     /**
-     * Gets the value of the arg0 property.
+     * Obtém o valor da propriedade arg0.
      * 
      * @return
      *     possible object is
@@ -46,7 +46,7 @@ public class UpdateAccount {
     }
 
     /**
-     * Sets the value of the arg0 property.
+     * Define o valor da propriedade arg0.
      * 
      * @param value
      *     allowed object is

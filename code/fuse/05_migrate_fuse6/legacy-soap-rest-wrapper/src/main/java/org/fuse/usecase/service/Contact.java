@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for contact complex type.
+ * <p>Classe Java de contact complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>O seguinte fragmento do esquema especifica o conteúdo esperado contido dentro desta classe.
  * 
  * <pre>
  * &lt;complexType name="contact"&gt;
@@ -52,7 +52,7 @@ public class Contact {
     protected String zip;
 
     /**
-     * Gets the value of the city property.
+     * Obtém o valor da propriedade city.
      * 
      * @return
      *     possible object is
@@ -64,7 +64,7 @@ public class Contact {
     }
 
     /**
-     * Sets the value of the city property.
+     * Define o valor da propriedade city.
      * 
      * @param value
      *     allowed object is
@@ -76,7 +76,7 @@ public class Contact {
     }
 
     /**
-     * Gets the value of the firstName property.
+     * Obtém o valor da propriedade firstName.
      * 
      * @return
      *     possible object is
@@ -88,7 +88,7 @@ public class Contact {
     }
 
     /**
-     * Sets the value of the firstName property.
+     * Define o valor da propriedade firstName.
      * 
      * @param value
      *     allowed object is
@@ -100,7 +100,7 @@ public class Contact {
     }
 
     /**
-     * Gets the value of the lastName property.
+     * Obtém o valor da propriedade lastName.
      * 
      * @return
      *     possible object is
@@ -112,7 +112,7 @@ public class Contact {
     }
 
     /**
-     * Sets the value of the lastName property.
+     * Define o valor da propriedade lastName.
      * 
      * @param value
      *     allowed object is
@@ -124,7 +124,7 @@ public class Contact {
     }
 
     /**
-     * Gets the value of the phone property.
+     * Obtém o valor da propriedade phone.
      * 
      * @return
      *     possible object is
@@ -136,7 +136,7 @@ public class Contact {
     }
 
     /**
-     * Sets the value of the phone property.
+     * Define o valor da propriedade phone.
      * 
      * @param value
      *     allowed object is
@@ -148,7 +148,7 @@ public class Contact {
     }
 
     /**
-     * Gets the value of the state property.
+     * Obtém o valor da propriedade state.
      * 
      * @return
      *     possible object is
@@ -160,7 +160,7 @@ public class Contact {
     }
 
     /**
-     * Sets the value of the state property.
+     * Define o valor da propriedade state.
      * 
      * @param value
      *     allowed object is
@@ -172,7 +172,7 @@ public class Contact {
     }
 
     /**
-     * Gets the value of the streetAddr property.
+     * Obtém o valor da propriedade streetAddr.
      * 
      * @return
      *     possible object is
@@ -184,7 +184,7 @@ public class Contact {
     }
 
     /**
-     * Sets the value of the streetAddr property.
+     * Define o valor da propriedade streetAddr.
      * 
      * @param value
      *     allowed object is
@@ -196,7 +196,7 @@ public class Contact {
     }
 
     /**
-     * Gets the value of the zip property.
+     * Obtém o valor da propriedade zip.
      * 
      * @return
      *     possible object is
@@ -208,7 +208,7 @@ public class Contact {
     }
 
     /**
-     * Sets the value of the zip property.
+     * Define o valor da propriedade zip.
      * 
      * @param value
      *     allowed object is

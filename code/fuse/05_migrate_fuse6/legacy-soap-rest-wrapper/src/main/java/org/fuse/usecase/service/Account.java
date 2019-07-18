@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for account complex type.
+ * <p>Classe Java de account complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>O seguinte fragmento do esquema especifica o conteúdo esperado contido dentro desta classe.
  * 
  * <pre>
  * &lt;complexType name="account"&gt;
@@ -43,7 +43,7 @@ public class Account {
     protected String salesRepresentative;
 
     /**
-     * Gets the value of the clientId property.
+     * Obtém o valor da propriedade clientId.
      * 
      */
     public int getClientId() {
@@ -51,7 +51,7 @@ public class Account {
     }
 
     /**
-     * Sets the value of the clientId property.
+     * Define o valor da propriedade clientId.
      * 
      */
     public void setClientId(int value) {
@@ -59,7 +59,7 @@ public class Account {
     }
 
     /**
-     * Gets the value of the company property.
+     * Obtém o valor da propriedade company.
      * 
      * @return
      *     possible object is
@@ -71,7 +71,7 @@ public class Account {
     }
 
     /**
-     * Sets the value of the company property.
+     * Define o valor da propriedade company.
      * 
      * @param value
      *     allowed object is
@@ -83,7 +83,7 @@ public class Account {
     }
 
     /**
-     * Gets the value of the contact property.
+     * Obtém o valor da propriedade contact.
      * 
      * @return
      *     possible object is
@@ -95,7 +95,7 @@ public class Account {
     }
 
     /**
-     * Sets the value of the contact property.
+     * Define o valor da propriedade contact.
      * 
      * @param value
      *     allowed object is
@@ -107,7 +107,7 @@ public class Account {
     }
 
     /**
-     * Gets the value of the salesRepresentative property.
+     * Obtém o valor da propriedade salesRepresentative.
      * 
      * @return
      *     possible object is
@@ -119,7 +119,7 @@ public class Account {
     }
 
     /**
-     * Sets the value of the salesRepresentative property.
+     * Define o valor da propriedade salesRepresentative.
      * 
      * @param value
      *     allowed object is

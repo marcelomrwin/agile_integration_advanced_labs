@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for corporateAccount complex type.
+ * <p>Classe Java de corporateAccount complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>O seguinte fragmento do esquema especifica o conteúdo esperado contido dentro desta classe.
  * 
  * <pre>
  * &lt;complexType name="corporateAccount"&gt;
@@ -43,7 +43,7 @@ public class CorporateAccount {
     protected String salesContact;
 
     /**
-     * Gets the value of the company property.
+     * Obtém o valor da propriedade company.
      * 
      * @return
      *     possible object is
@@ -55,7 +55,7 @@ public class CorporateAccount {
     }
 
     /**
-     * Sets the value of the company property.
+     * Define o valor da propriedade company.
      * 
      * @param value
      *     allowed object is
@@ -67,7 +67,7 @@ public class CorporateAccount {
     }
 
     /**
-     * Gets the value of the contact property.
+     * Obtém o valor da propriedade contact.
      * 
      * @return
      *     possible object is
@@ -79,7 +79,7 @@ public class CorporateAccount {
     }
 
     /**
-     * Sets the value of the contact property.
+     * Define o valor da propriedade contact.
      * 
      * @param value
      *     allowed object is
@@ -91,7 +91,7 @@ public class CorporateAccount {
     }
 
     /**
-     * Gets the value of the id property.
+     * Obtém o valor da propriedade id.
      * 
      */
     public int getId() {
@@ -99,7 +99,7 @@ public class CorporateAccount {
     }
 
     /**
-     * Sets the value of the id property.
+     * Define o valor da propriedade id.
      * 
      */
     public void setId(int value) {
@@ -107,7 +107,7 @@ public class CorporateAccount {
     }
 
     /**
-     * Gets the value of the salesContact property.
+     * Obtém o valor da propriedade salesContact.
      * 
      * @return
      *     possible object is
@@ -119,7 +119,7 @@ public class CorporateAccount {
     }
 
     /**
-     * Sets the value of the salesContact property.
+     * Define o valor da propriedade salesContact.
      * 
      * @param value
      *     allowed object is

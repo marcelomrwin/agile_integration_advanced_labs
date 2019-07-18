@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for company complex type.
+ * <p>Classe Java de company complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>O seguinte fragmento do esquema especifica o conteúdo esperado contido dentro desta classe.
  * 
  * <pre>
  * &lt;complexType name="company"&gt;
@@ -40,7 +40,7 @@ public class Company {
     protected String name;
 
     /**
-     * Gets the value of the active property.
+     * Obtém o valor da propriedade active.
      * 
      */
     public boolean isActive() {
@@ -48,7 +48,7 @@ public class Company {
     }
 
     /**
-     * Sets the value of the active property.
+     * Define o valor da propriedade active.
      * 
      */
     public void setActive(boolean value) {
@@ -56,7 +56,7 @@ public class Company {
     }
 
     /**
-     * Gets the value of the geo property.
+     * Obtém o valor da propriedade geo.
      * 
      * @return
      *     possible object is
@@ -68,7 +68,7 @@ public class Company {
     }
 
     /**
-     * Sets the value of the geo property.
+     * Define o valor da propriedade geo.
      * 
      * @param value
      *     allowed object is
@@ -80,7 +80,7 @@ public class Company {
     }
 
     /**
-     * Gets the value of the name property.
+     * Obtém o valor da propriedade name.
      * 
      * @return
      *     possible object is
@@ -92,7 +92,7 @@ public class Company {
     }
 
     /**
-     * Sets the value of the name property.
+     * Define o valor da propriedade name.
      * 
      * @param value
      *     allowed object is
