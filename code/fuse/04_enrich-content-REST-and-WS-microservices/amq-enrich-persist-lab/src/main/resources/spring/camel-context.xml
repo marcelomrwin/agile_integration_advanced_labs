@@ -1,21 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:camel="http://camel.apache.org/schema/spring"
-    xmlns:cxf="http://camel.apache.org/schema/cxf"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd       http://camel.apache.org/schema/cxf  http://camel.apache.org/schema/cxf/camel-cxf.xsd">
-    <cxf:cxfEndpoint
-        address="http://{{soap.host}}:{{soap.port}}/ws/customerService"
-        id="customerWebService" loggingFeatureEnabled="true"
-        serviceClass="org.fuse.usecase.service.CustomerWS" wsdlURL="classpath:wsdl/customerService.wsdl"/>
-    <bean class="org.fuse.usecase.AccountAggregator" id="reconcileData"/>
-    <bean class="org.fuse.usecase.ProcessorBean" id="processorBean"/>
-    <!--  THIS PROVIDER DOESN'T WORK & RETURN ERROR 415 Unsupported Media Type
-      It can't also handle the Body : No message body reader has been found for
-      class CXF_Test.cxf_test.Book, ContentType: application/json
-      <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/>
-    -->
-    <bean
-        class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" id="jsonProvider"/>
-    <camelContext id="_camelContext1" xmlns="http://camel.apache.org/schema/spring">
-    </camelContext>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:cxf="http://camel.apache.org/schema/cxf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd       http://camel.apache.org/schema/cxf  http://camel.apache.org/schema/cxf/camel-cxf.xsd">
+	<cxf:cxfEndpoint address="http://{{soap.host}}:{{soap.port}}/ws/customerService" id="customerWebService"
+		loggingFeatureEnabled="true" serviceClass="org.fuse.usecase.service.CustomerWS" wsdlURL="classpath:wsdl/customerService.wsdl" />
+	<bean class="org.fuse.usecase.AccountAggregator" id="reconcileData" />
+	<bean class="org.fuse.usecase.ProcessorBean" id="processorBean" />
+	<!-- THIS PROVIDER DOESN'T WORK & RETURN ERROR 415 Unsupported Media Type It can't also handle the Body : No message body reader has been found 
+		for class CXF_Test.cxf_test.Book, ContentType: application/json <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/> -->
+	<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" id="jsonProvider" />
+
+
+	<camelContext xmlns="http://camel.apache.org/schema/spring">
+
+		<restConfiguration bindingMode="off" component="servlet" contextPath="/rest" />
+
+		<rest apiDocs="true" path="/service">
+			<post uri="/customers">
+				<to uri="direct:inbox" />
+			</post>
+		</rest>
+
+		<route streamCache="true">
+			<from uri="direct:inbox" />
+			<setExchangePattern pattern="InOnly" />
+			<to uri="amqp:queue:accountQueue" />
+			<transform>
+				<constant>Processed the customer data</constant>
+			</transform>
+		</route>
+
+		<route streamCache="true">
+
+			<from uri="amqp:queue:accountQueue" />
+
+			<camel:convertBodyTo type="java.lang.String" />
+			<camel:multicast parallelProcessing="true" strategyRef="reconcileData">
+				<camel:to uri="direct:callRestEndpoint" />
+				<camel:to uri="direct:callWSEndpoint" />
+			</camel:multicast>
+			<to uri="direct:insertDB" />
+
+		</route>
+
+		<route>
+			<from uri="direct:callRestEndpoint" />
+
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1" />
+				<handled>
+					<constant>true</constant>
+				</handled>
+				<log message=">> Error : ${exception.message}, ${exception.stacktrace}" />
+			</onException>
+
+			<camel:setHeader headerName="Content-Type">
+				<camel:constant>Content-Type</camel:constant>
+			</camel:setHeader>
+			<camel:setHeader headerName="Accept">
+				<camel:constant>application/json</camel:constant>
+			</camel:setHeader>
+			<camel:setHeader headerName="CamelHttpMethod">
+				<camel:constant>POST</camel:constant>
+			</camel:setHeader>
+			<camel:setHeader headerName="CamelCxfRsUsingHttpAPI">
+				<camel:constant>True</camel:constant>
+			</camel:setHeader>
+			<setHeader headerName="CamelHttpUri" id="_setHeader5">
+                <simple>http://{{rest.host}}:{{rest.port}}/rest/customerservice/enrich</simple>
+            </setHeader>
+			
+			<camel:to uri="http4://restClient" />
+			
+			<camel:unmarshal>
+				<camel:json library="Jackson" unmarshalTypeName="org.globex.Account" />
+			</camel:unmarshal>
+		</route>
+
+		<route>
+			<from uri="direct:callWSEndpoint" />
+			<camel:unmarshal>
+				<camel:json library="Jackson" unmarshalTypeName="org.globex.Account" />
+			</camel:unmarshal>			
+			<to uri="cxf:bean:customerWebService" />
+		</route>
+
+		<route>
+			<from uri="direct:insertDB" />
+			<log message=">> Before Insert : ${body}" />
+			<bean method="defineNamedParameters" ref="processorBean" />
+			<to
+				uri="sql:INSERT INTO USECASE.T_ACCOUNT(CLIENT_ID,SALES_CONTACT,COMPANY_NAME,COMPANY_GEO,COMPANY_ACTIVE,CONTACT_FIRST_NAME,CONTACT_LAST_NAME,CONTACT_ADDRESS,CONTACT_CITY,CONTACT_STATE,CONTACT_ZIP,CONTACT_PHONE,CREATION_DATE,CREATION_USER)                          VALUES                          (:#CLIENT_ID,:#SALES_CONTACT,:#COMPANY_NAME,:#COMPANY_GEO,:#COMPANY_ACTIVE,:#CONTACT_FIRST_NAME,:#CONTACT_LAST_NAME,:#CONTACT_ADDRESS,:#CONTACT_CITY,:#CONTACT_STATE,:#CONTACT_ZIP,:#CONTACT_PHONE,:#CREATION_DATE,:#CREATION_USER);" />
+			<log message=">>> Results : ${body}" />
+		</route>
+
+	</camelContext>
 </beans>

@@ -11,15 +11,29 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Aggregator implementation which extract the id and salescontact
- * from CorporateAccount and update the Account
+ * Aggregator implementation which extract the id and salescontact from
+ * CorporateAccount and update the Account
  */
 public class AccountAggregator implements AggregationStrategy {
 
-    @Override
-    public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+	@Override
+	public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 
-        return oldExchange;
-    }
-    
+		if (oldExchange == null) {			
+			return newExchange;
+		}
+
+		if (oldExchange.getIn().getBody() instanceof String) {
+			return newExchange;
+		}
+		CorporateAccount ca = newExchange.getIn().getBody(CorporateAccount.class);
+		Account account = oldExchange.getIn().getBody(Account.class);
+
+		account.setClientId(ca.getId());
+		account.setSalesRepresentative(ca.getSalesContact());
+		oldExchange.getIn().setBody(account);
+
+		return oldExchange;
+	}
+
 }
